@@ -17,7 +17,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_29_021325) do
 
   create_table "authentication_credentials", force: :cascade do |t|
     t.uuid "user_id"
-    t.string "email", null: false
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -29,6 +28,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_29_021325) do
     t.string "email", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
 end
