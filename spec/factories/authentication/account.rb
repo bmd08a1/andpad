@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :credentials, class: Authentication::Credentials do
+  factory :account, class: Authentication::Account do
     user_id { SecureRandom.uuid }
     password { 'password' }
   end

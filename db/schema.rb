@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_29_021325) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_31_004027) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
-  create_table "authentication_credentials", force: :cascade do |t|
+  create_table "authentication_accounts", force: :cascade do |t|
     t.uuid "user_id"
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
