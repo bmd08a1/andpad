@@ -12,7 +12,7 @@ module Users
       ActiveRecord::Base.transaction do
         user_id = SecureRandom.uuid
         User.create!(id: user_id, email: @email, first_name: @first_name, last_name: @last_name)
-        Authentication::Gateway.register(user_id: user_id, password: @password)
+        Authentication::Account.create!(user_id: user_id, password: @password)
       end
     rescue ActiveRecord::ActiveRecordError => e
       add_error(e)

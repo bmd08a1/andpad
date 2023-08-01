@@ -1,6 +1,13 @@
 require 'rails_helper'
 
-describe Authentication::Account do
+describe Authentication::Account, type: :model do
+  describe 'validation' do
+    subject { create(:account) }
+
+    it { is_expected.to validate_presence_of :password }
+    it { is_expected.to validate_length_of(:password).is_at_least(6) }
+  end
+
   describe '#authenticate' do
     let(:account) { create(:account, password: 'password') }
 
