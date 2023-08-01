@@ -2,7 +2,7 @@ require 'bcrypt'
 
 module Authentication
   class Account < ActiveRecord::Base
-    self.table_name = 'authentication_account'
+    self.table_name = 'authentication_accounts'
 
     def authenticate(password)
       BCrypt::Password.new(password_digest) == password
