@@ -58,7 +58,7 @@ RSpec.describe 'Users', type: :request do
           }
 
           expect(json_response['success']).to be false
-          expect(json_response['error_messages']).to eql({ 'user' => { 'password_confirmation' => ['is missing'] } })
+          expect(json_response['error_messages']).to eql({ 'password_confirmation' => ['is missing'] })
           expect(response.status).to eql(400)
         end
       end

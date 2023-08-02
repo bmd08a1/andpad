@@ -1,9 +1,9 @@
 class UsersController < ApplicationController
   def create
-    contract = RegisterUserContract.new.call(params.to_unsafe_h)
+    contract = RegisterUserContract.new.call(params.to_unsafe_h['user'])
 
     if contract.success?
-      register_params = contract.to_h[:user].except(:password_confirmation)
+      register_params = contract.to_h.except(:password_confirmation)
       service = Users::Create.new(**register_params)
       service.call
 
