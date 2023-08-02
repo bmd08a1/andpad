@@ -8,8 +8,12 @@ module Companies
 
     def call
       ActiveRecord::Base.transaction do
+        @company_id = SecureRandom.uuid
+
+        @owner_attr.merge!(company_id: @company_id)
         owner = create_owner
-        @data = Company.create!(name: @name, owner_id: owner.id)
+
+        @data = Company.create!(id: @company_id, name: @name, owner_id: owner.id)
       end
     rescue StandardError => e
       add_error(e)

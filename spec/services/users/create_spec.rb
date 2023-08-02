@@ -1,11 +1,13 @@
 require 'rails_helper'
 
 describe Users::Create do
-  let(:service) { described_class.new(email: email, password: password, first_name: first_name, last_name: last_name) }
+  let(:service) { described_class.new(email: email, password: password, first_name: first_name, last_name: last_name,
+                                     company_id: company_id) }
   let(:email) { 'test@example.com' }
   let(:password) { 'password' }
   let(:first_name) { 'first_name' }
   let(:last_name) { 'last_name' }
+  let(:company_id) { SecureRandom.uuid }
 
   context 'success' do
     it 'creates a user and a an account records' do
@@ -23,6 +25,7 @@ describe Users::Create do
       expect(user.email).to eql('test@example.com')
       expect(user.first_name).to eql('first_name')
       expect(user.last_name).to eql('last_name')
+      expect(user.company_id).to eql(company_id)
     end
 
     it 'creates account links with created user and correct password' do
