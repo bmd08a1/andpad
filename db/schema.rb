@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_02_105615) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_02_110829) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -46,7 +46,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_02_105615) do
   end
 
   create_table "teams", force: :cascade do |t|
-    t.uuid "company_id"
     t.string "name"
     t.uuid "manager_id"
     t.index ["manager_id"], name: "index_teams_on_manager_id"
