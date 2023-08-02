@@ -31,4 +31,21 @@ class TeamsController < ApplicationController
       render json: { success: false, error_messages: service.error_messages }, status: 422
     end
   end
+
+  def add_member
+    contract = AddMemberContract.new.call(params).to_h
+
+    if TeamsPolicy.can_add_member?(current_user, contract[:team_id], contract[:member_id])
+      service = Teams::AddMember.new(**contract)
+      service.call
+
+      if service.success?
+        render json: { success: true }
+      else
+        render json: { success: false, error_messages: service.error_messages }, status: 422
+      end
+    else
+      render json: { success: false, error_messages: ['unauthorized'] }, status: 403
+    end
+  end
 end
