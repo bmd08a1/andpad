@@ -18,8 +18,9 @@ describe Companies::Create do
   context 'success' do
     it 'calls Users::Create to create user record for the owner' do
       service.call
+      company_id = Company.last.id
 
-      expect(Users::Create).to have_received(:new).with(owner_attr)
+      expect(Users::Create).to have_received(:new).with(owner_attr.merge(company_id: company_id))
       expect(create_user_service).to have_received(:call)
     end
 
