@@ -5,6 +5,10 @@ Rails.application.routes.draw do
   # root "articles#index"
 
   post '/users' => 'users#create'
+
   post '/login' => 'tokens#create'
+
   post '/companies/register' => 'companies#create'
+
+  post '/teams' => 'teams#create'
 end

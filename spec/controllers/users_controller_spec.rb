@@ -19,7 +19,6 @@ RSpec.describe 'Users', type: :request do
     let(:access_token) { create(:access_token, user_id: user.id) }
     let!(:user) { create(:user, company_id: company.id) }
     let(:company) { create(:company) }
-    let(:policy) { double(can_create?: true) }
 
     before do
       company.update(owner_id: user.id)
