@@ -15,6 +15,7 @@ require "action_cable/engine"
 # require "rails/test_unit/railtie"
 
 require_relative '../authentication/authentication.rb'
+require_relative '../company_structure/company_structure.rb'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
