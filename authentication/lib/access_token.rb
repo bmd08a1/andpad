@@ -14,6 +14,15 @@ module Authentication
               created_at: Time.now.to_i)
     end
 
+    def self.refresh(access_token, refresh_token)
+      current_token = find_by!(token: access_token, refresh_token: refresh_token)
+
+      new_token = generate(current_token.user_id)
+      current_token.destroy!
+
+      new_token
+    end
+
     def expires_in
       Time.at(self.created_at + TOKEN_DURATION) - Time.now
     end

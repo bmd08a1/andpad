@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   post '/users' => 'users#create'
 
   post '/login' => 'tokens#create'
+  post '/refresh' => 'tokens#refresh'
 
   post '/companies/register' => 'companies#create'
 

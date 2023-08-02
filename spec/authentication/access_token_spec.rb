@@ -11,6 +11,22 @@ describe Authentication::AccessToken, type: :model do
     end
   end
 
+  describe '.refresh' do
+    let!(:old_token) { create(:access_token, token: token, refresh_token: refresh_token) }
+    let(:token) { SecureRandom.uuid }
+    let(:refresh_token) { SecureRandom.uuid }
+
+    it 'deletes old access token and generate a new one' do
+      new_token = described_class.refresh(token, refresh_token)
+
+      expect(Authentication::AccessToken.find_by(id: old_token.id)).to be nil
+
+      expect(new_token.user_id).to eql(old_token.user_id)
+      expect(new_token.token).to_not eql(token)
+      expect(new_token.refresh_token).to_not eql(refresh_token)
+    end
+  end
+
   describe '#expires_in' do
     let(:access_token) { create(:access_token) }
 

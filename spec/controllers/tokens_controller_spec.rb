@@ -63,4 +63,71 @@ RSpec.describe 'Tokens', type: :request do
       end
     end
   end
+
+  describe 'POST /refresh' do
+    let(:path) { '/refresh' }
+    let(:params) { {
+      'access_token' => access_token,
+      'refresh_token' => refresh_token,
+    } }
+    let(:access_token) { SecureRandom.uuid }
+    let(:refresh_token) { SecureRandom.uuid }
+    subject { post path, params: params, as: :json }
+    let(:refresh_service) { double(call: nil, success?: true, data: new_token) }
+    let(:new_token) { {
+      'access_token' => SecureRandom.uuid,
+      'refresh_token' => SecureRandom.uuid,
+      'expires_in' => 1800.0
+    } }
+
+    before do
+      allow(Authentication::Refresh).to receive(:new).and_return(refresh_service)
+    end
+
+    it 'calls refresh service' do
+      subject
+
+      expect(Authentication::Refresh).to have_received(:new).with(
+        access_token: access_token, refresh_token: refresh_token
+      )
+      expect(refresh_service).to have_received(:call)
+    end
+
+    context 'success' do
+      it 'returns new token data' do
+        subject
+
+        expect(response.status).to eql(200)
+        expect(json_response['data']).to eql(new_token)
+      end
+    end
+
+    context 'failed' do
+      context 'params contract failed' do
+        let(:params) { {
+            'access_token' => access_token,
+        } }
+
+        it 'return errors' do
+          subject
+
+          expect(json_response['success']).to be false
+          expect(json_response['error_messages']).to eql({ 'refresh_token' => ['is missing'] })
+          expect(response.status).to eql(400)
+        end
+      end
+
+      context 'refresh token failed' do
+        let(:refresh_service) { double(call: nil, success?: false, error_messages: ['cannot_refresh_token']) }
+
+        it 'return errors' do
+          subject
+
+          expect(json_response['success']).to be false
+          expect(json_response['error_messages']).to eql(['cannot_refresh_token'])
+          expect(response.status).to eql(422)
+        end
+      end
+    end
+  end
 end
