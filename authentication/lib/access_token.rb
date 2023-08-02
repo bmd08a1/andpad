@@ -7,6 +7,8 @@ module Authentication
 
     belongs_to :account
 
+    scope :not_expired, -> { where('created_at > (?)::integer', (Time.now - TOKEN_DURATION).to_i) }
+
     def self.generate(user_id)
       create!(user_id: user_id, token: SecureRandom.uuid, refresh_token: SecureRandom.uuid,
               created_at: Time.now.to_i)
