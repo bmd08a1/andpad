@@ -5,7 +5,7 @@ class UsersController < ApplicationController
     contract = RegisterUserContract.new.call(params.to_unsafe_h['user'])
 
     if contract.success?
-      if UsersPolicy.new(current_user).can_create?
+      if UsersPolicy.can_create?(current_user)
         register_params = contract.to_h.except(:password_confirmation)
         service = Users::Create.new(**register_params.merge(company_id: current_user.company_id))
         service.call

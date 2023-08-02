@@ -16,8 +16,8 @@ RSpec.describe 'Teams', type: :request do
     let(:headers) { { 'token' => access_token.token } }
     let(:access_token) { create(:access_token, user_id: current_user.id) }
     let!(:current_user) { create(:user, company_id: company.id) }
-    let!(:manager) { create(:user, email: 'manager@example.com', id: manager_id, company_id: company.id) }
     let(:company) { create(:company) }
+    let!(:manager) { create(:user, email: 'manager@example.com', id: manager_id, company_id: company.id) }
 
     before do
       company.update(owner_id: current_user.id)
@@ -105,6 +105,41 @@ RSpec.describe 'Teams', type: :request do
           expect(json_response['error_messages']).to eql(['unauthorized'])
           expect(response.status).to eql(403)
         end
+      end
+    end
+  end
+
+  describe 'GET /teams' do
+    subject { get path, headers: headers, as: :json }
+    let(:path) { '/teams' }
+    let(:headers) { { 'token' => access_token.token } }
+    let(:access_token) { create(:access_token, user_id: current_user.id) }
+    let!(:current_user) { create(:user, company_id: company.id) }
+    let(:company) { create(:company) }
+    let!(:teams) {
+      [
+        create(:team, name: 'abc', manager_id: managers[0].id),
+        create(:team, name: 'bcd', manager_id: managers[1].id),
+        create(:team, name: 'cde', manager_id: managers[2].id)
+      ]
+    }
+    let(:managers) {
+      [
+        create(:user, first_name: 'manager_1', email: 'manager1@gmail.com', company_id: company.id),
+        create(:user, first_name: 'manager_2', email: 'manager2@gmail.com', company_id: company.id),
+        create(:user, first_name: 'manager_3', email: 'manager3@gmail.com', company_id: company.id),
+      ]
+    }
+
+    it 'returns teams data' do
+      subject
+
+      expect(json_response['data'].count).to eql(3)
+      (0..2).each do |i|
+        expect(json_response['data'][i]['manager_first_name']).to eql(managers[i].first_name)
+        expect(json_response['data'][i]['manager_last_name']).to eql(managers[i].last_name)
+        expect(json_response['data'][i]['team_name']).to eql(teams[i].name)
+        expect(json_response['data'][i]['team_id']).to eql(teams[i].id)
       end
     end
   end

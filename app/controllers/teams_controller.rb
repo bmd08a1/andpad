@@ -20,4 +20,15 @@ class TeamsController < ApplicationController
       render json: { success: false, error_messages: contract.errors.to_h }, status: 400
     end
   end
+
+  def index
+    service = Teams::List.new(current_user: current_user)
+    service.call
+
+    if service.success?
+      render json: { success: true, data: service.data }
+    else
+      render json: { success: false, error_messages: service.error_messages }, status: 422
+    end
+  end
 end

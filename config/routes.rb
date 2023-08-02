@@ -11,4 +11,5 @@ Rails.application.routes.draw do
   post '/companies/register' => 'companies#create'
 
   post '/teams' => 'teams#create'
+  get '/teams' => 'teams#index'
 end
