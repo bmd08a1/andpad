@@ -10,10 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_31_004027) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_01_144948) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "access_tokens", force: :cascade do |t|
+    t.uuid "token", null: false
+    t.uuid "refresh_token", null: false
+    t.integer "created_at", null: false
+    t.uuid "user_id"
+    t.index ["token"], name: "index_access_tokens_on_token", unique: true
+  end
 
   create_table "authentication_accounts", force: :cascade do |t|
     t.uuid "user_id"
