@@ -33,4 +33,4 @@ class TokensController < ApplicationController
       render json: { success: false, error_messages: contract.errors.to_h }, status: 400
     end
   end
-  end
+end
