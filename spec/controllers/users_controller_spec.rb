@@ -134,4 +134,36 @@ RSpec.describe 'Users', type: :request do
       end
     end
   end
+
+  describe 'GET /users' do
+    subject { get path, headers: headers, as: :json }
+    let(:path) { '/users' }
+    let(:headers) { { 'token' => access_token.token } }
+    let(:access_token) { create(:access_token, user_id: user.id) }
+    let!(:user) { create(:user, company_id: company.id) }
+    let(:company) { create(:company) }
+    let!(:company_users) {
+      [
+        create(:user, email: 'manager@example.com', first_name: 'manager', company_id: company.id),
+        create(:user, email: 'member@example.com', first_name: 'member', company_id: company.id)
+      ]
+    }
+    let!(:team) { create(:team, company_id: company.id, manager_id: company_users[0].id) }
+    let!(:member) { create(:member, team_id: team.id, user_id: company_users[1].id) }
+    let!(:other_user) { create(:user, email: 'other@example.com', company_id: create(:company, name: 'other').id ) }
+
+    it 'returns same company users data' do
+      subject
+
+      expect(json_response['data'].count).to eql(3)
+      expect(json_response['data']).to match_array([
+        { 'user_id' => user.id, 'email' => user.email, 'user_name' => user.first_name + ' ' + user.last_name,
+        'is_manager' => false, 'member_of' => nil, 'managed_team' => nil },
+        { 'user_id' => company_users[0].id, 'email' => company_users[0].email, 'user_name' => company_users[0].first_name + ' ' + company_users[0].last_name,
+          'is_manager' => true, 'member_of' => nil, 'managed_team' => { 'team_id' => team.id, 'team_name' => team.name } },
+        { 'user_id' => company_users[1].id, 'email' => company_users[1].email, 'user_name' => company_users[1].first_name + ' ' + company_users[1].last_name,
+          'is_manager' => false, 'member_of' => { 'team_id' => team.id, 'team_name' => team.name }, 'managed_team' => nil  },
+      ])
+    end
+  end
 end

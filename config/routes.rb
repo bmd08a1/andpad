@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   # root "articles#index"
 
   post '/users' => 'users#create'
+  get '/users' => 'users#index'
 
   post '/login' => 'tokens#create'
   post '/refresh' => 'tokens#refresh'
