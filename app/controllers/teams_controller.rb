@@ -6,7 +6,7 @@ class TeamsController < ApplicationController
 
     if contract.success?
       if TeamsPolicy.can_create?(current_user, contract.to_h[:manager_id])
-        team = CompanyStructure::Team.create(**contract.to_h)
+        team = CompanyStructure::Team.create(**contract.to_h.merge(company_id: current_user.company_id))
 
         if team.persisted?
           render json: { success: true }
@@ -33,7 +33,7 @@ class TeamsController < ApplicationController
   end
 
   def add_member
-    contract = AddMemberContract.new.call(params).to_h
+    contract = AddMemberContract.new.call(params.to_unsafe_h).to_h
 
     if TeamsPolicy.can_add_member?(current_user, contract[:team_id], contract[:member_id])
       service = Teams::AddMember.new(**contract)

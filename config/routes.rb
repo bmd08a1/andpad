@@ -13,4 +13,5 @@ Rails.application.routes.draw do
 
   post '/teams' => 'teams#create'
   get '/teams' => 'teams#index'
+  put '/teams/:team_id/add_member' => 'teams#add_member'
 end

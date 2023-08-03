@@ -77,7 +77,6 @@ RSpec.describe 'Teams', type: :request do
 
         it 'returns error' do
           expect{ subject }.to_not change { CompanyStructure::Team.count }
-
           expect(json_response['error_messages']).to eql(['Unauthenticated'])
           expect(response.status).to eql(401)
         end
@@ -140,6 +139,80 @@ RSpec.describe 'Teams', type: :request do
         expect(json_response['data'][i]['manager_last_name']).to eql(managers[i].last_name)
         expect(json_response['data'][i]['team_name']).to eql(teams[i].name)
         expect(json_response['data'][i]['team_id']).to eql(teams[i].id)
+      end
+    end
+  end
+
+  describe 'PUT /teams/:team_id/add_member' do
+    subject { put path, params: params, headers: headers, as: :json }
+    let(:path) { "/teams/#{team.id}/add_member" }
+    let(:params) { { 'member_id' => member.id } }
+    let(:team) { create(:team, company_id: company.id) }
+    let(:member) { create(:user, email: 'member@gmail.com', company_id: company.id) }
+    let(:headers) { { 'token' => access_token.token } }
+    let(:access_token) { create(:access_token, user_id: current_user.id) }
+    let(:current_user) { create(:user, company_id: company.id) }
+    let(:company) { create(:company) }
+    let(:add_member_service) { double(call: nil, success?: true) }
+    before do
+      company.update(owner_id: current_user.id)
+      allow(Teams::AddMember).to receive(:new).and_return(add_member_service)
+    end
+
+    it 'calls AddMember service' do
+      subject
+
+      expect(Teams::AddMember).to have_received(:new).with(team_id: team.id.to_s, member_id: member.id)
+      expect(add_member_service).to have_received(:call)
+    end
+
+    context 'success' do
+      it 'returns success' do
+        subject
+
+        expect(response.status).to eql(200)
+        expect(json_response['success']).to be true
+      end
+    end
+
+    context 'failed' do
+      context 'failed to add member' do
+        let(:add_member_service) { double(call: nil, success?: false, error_messages: ['failed']) }
+
+        it 'returns error' do
+          subject
+
+          expect(response.status).to eql(422)
+          expect(json_response['success']).to be false
+          expect(json_response['error_messages']).to eql(['failed'])
+        end
+      end
+
+      context 'not allowed to add member' do
+        context 'current_user is not in the same company' do
+          let(:current_user) { create(:user, company_id: other_company.id) }
+          let(:other_company) { create(:company, name: 'other') }
+
+          it 'returns unauthorized' do
+            subject
+
+            expect(response.status).to eql(403)
+            expect(json_response['error_messages']).to eql(['unauthorized'])
+          end
+        end
+
+        context 'current_user is not owner is not manager' do
+          before do
+            company.update(owner_id: SecureRandom.uuid)
+          end
+
+          it 'returns unauthorized' do
+            subject
+
+            expect(response.status).to eql(403)
+            expect(json_response['error_messages']).to eql(['unauthorized'])
+          end
+        end
       end
     end
   end
