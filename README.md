@@ -1,24 +1,16 @@
-# README
+# Project description
+- Simple HR app with team management features
+- Features:
+  - Register company
+  - Register user for company
+  - User login
+  - Create teams
+  - Add team members
+- API-only server
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+# Technologies applied
+- Service object for processing request
+- Policy object for authorization
+- Strong params using dry-validation gem
+- Unit test using Rspec
+- Domain Driven Design
